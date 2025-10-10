@@ -32,7 +32,6 @@ int main () {
 	     << setw(10) << fixed << setprecision(2) << price1
 	     << setw(10) << fixed << setprecision(2) << Total2 <<endl;
 	     return 0;
-		  
-   	return 0;
 }
+
 
