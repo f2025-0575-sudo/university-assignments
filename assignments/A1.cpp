@@ -5,12 +5,12 @@ int main () {
     float x,y,Sum,Difference,Product,Quotient;
 
     // input 
-    cout <<"Enter first number =";
+    cout <<"Enter first number";
     cin >>x;
-    cout <<"Enter second number =";
+    cout <<"Enter second number";
     cin >>y;
 
-    // formulas for calculations
+    //formulas for calculations
      Sum = (x+y);
      Difference = (x-y);
      Product = (x*y);
@@ -35,12 +35,11 @@ int main () {
 
     //output after casting
     cout<<endl;
-    cout << "The Sum of the two numbers after type casting is =" << Sum1 << endl;
-    cout << "The Difference of the two numbers after type casting is =" << Difference1 << endl;
+    cout << " The Sum of the two numbers after type casting is =" << Sum1 << endl;
+    cout << " The Difference of the two numbers after type casting is =" << Difference1 << endl;
     cout << "The Product of the two numbers after type casting is =" << Product1 << endl;
     cout << "The Quotient of the two numbers after type casting is =" << Quotient1 << endl;
     //All the calculations have been performed 
     
     return 0;     
 }  
-
