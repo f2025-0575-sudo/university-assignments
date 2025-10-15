@@ -1,4 +1,4 @@
-#include<iostream>
+ #include<iostream>
 using namespace std;
 int main () {
     int day;
@@ -28,6 +28,6 @@ int main () {
             break;
         default:
             cout<<"Invalid Input";
-            return 0;
+            break;
     }
    }
