@@ -1,6 +1,6 @@
 #include<iostream>
 using namespace std;
-int attemptwithdraw(int balance,int amount){
+int attemptwithdraw(int balance,int& amount){
  if(balance>amount){
     balance=balance-amount;
 }
