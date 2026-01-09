@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <ctime>
 using namespace std;
 
 struct FoodItem {
@@ -13,7 +12,6 @@ struct FoodItem {
 struct Table {
     int id;
     int busy;
-    time_t startTime;
 };
 
 FoodItem menu[5] = {
@@ -31,7 +29,7 @@ void initFiles() {
     if (!f1) {
         ofstream o("tables.txt");
         for (int i = 1; i <= 10; i++)
-            o << i << " 0 0\n";
+            o << i << " 0" << endl;
         o.close();
     } else f1.close();
 
@@ -51,14 +49,14 @@ void initFiles() {
 void loadTables() {
     ifstream fin("tables.txt");
     for (int i = 0; i < 10; i++)
-        fin >> tables[i].id >> tables[i].busy >> tables[i].startTime;
+        fin >> tables[i].id >> tables[i].busy;
     fin.close();
 }
 
 void saveTables() {
     ofstream fout("tables.txt");
     for (int i = 0; i < 10; i++)
-        fout << tables[i].id << " " << tables[i].busy << " " << tables[i].startTime << endl;
+        fout << tables[i].id << " " << tables[i].busy << endl;
     fout.close();
 }
 
@@ -72,7 +70,8 @@ FoodItem getItem(int id) {
 void showMenu() {
     cout << left << setw(5) << "No"
          << setw(30) << "Item"
-         << right << setw(10) << "Price\n";
+         << right << setw(10) << "Price" << endl;
+
     for (int i = 0; i < 5; i++)
         cout << left << setw(5) << menu[i].id
              << setw(30) << menu[i].name
@@ -93,7 +92,8 @@ void orderFood(int tableId) {
         fout << tableId << " " << id << " " << qty << endl;
         fout.close();
 
-        cout << "1 Add another item\n2 Back\n";
+        cout << "1 Add another item" << endl;
+        cout << "2 Back" << endl;
         cin >> again;
     }
 }
@@ -104,11 +104,13 @@ bool showBill(int tableId) {
     int total = 0;
     bool found = false;
 
-    cout << "\nBILL FOR TABLE " << tableId << endl;
+    cout << endl;
+    cout << "BILL FOR TABLE " << tableId << endl;
+
     cout << left << setw(25) << "Item"
          << right << setw(5) << "Qty"
          << setw(10) << "Price"
-         << setw(10) << "Total\n";
+         << setw(10) << "Total" << endl;
 
     while (fin >> t >> id >> qty) {
         if (t == tableId) {
@@ -116,6 +118,7 @@ bool showBill(int tableId) {
             int sum = item.price * qty;
             total += sum;
             found = true;
+
             cout << left << setw(25) << item.name
                  << right << setw(5) << qty
                  << setw(10) << item.price
@@ -125,7 +128,7 @@ bool showBill(int tableId) {
     fin.close();
 
     if (!found) {
-        cout << "No orders for this table\n";
+        cout << "No orders for this table" << endl;
         return false;
     }
 
@@ -156,7 +159,7 @@ void payBill(int tableId) {
 
     if (!found) {
         remove("temp.txt");
-        cout << "No orders to pay\n";
+        cout << "No orders to pay" << endl;
         return;
     }
 
@@ -165,7 +168,6 @@ void payBill(int tableId) {
 
     loadTables();
     tables[tableId - 1].busy = 0;
-    tables[tableId - 1].startTime = 0;
     saveTables();
 
     ofstream sales("sales.txt", ios::app);
@@ -184,13 +186,17 @@ void customer() {
 
     if (!tables[tableId - 1].busy) {
         tables[tableId - 1].busy = 1;
-        tables[tableId - 1].startTime = time(0);
         saveTables();
     }
 
     int ch;
     while (true) {
-        cout << "\n1 View Menu\n2 Order Food\n3 View Bill\n4 Pay Bill\n5 Back\n";
+        cout << endl;
+        cout << "1 View Menu" << endl;
+        cout << "2 Order Food" << endl;
+        cout << "3 View Bill" << endl;
+        cout << "4 Pay Bill" << endl;
+        cout << "5 Back" << endl;
         cin >> ch;
 
         if (ch == 1) showMenu();
@@ -206,10 +212,12 @@ void waiter() {
     int t, id, qty;
     bool found = false;
 
-    cout << "\nACTIVE ORDERS\n";
+    cout << endl;
+    cout << "ACTIVE ORDERS" << endl;
+
     cout << left << setw(10) << "Table"
          << setw(25) << "Item"
-         << setw(5) << "Qty\n";
+         << setw(5) << "Qty" << endl;
 
     while (fin >> t >> id >> qty) {
         FoodItem item = getItem(id);
@@ -221,7 +229,7 @@ void waiter() {
     fin.close();
 
     if (!found)
-        cout << "No active orders\n";
+        cout << "No active orders" << endl;
 }
 
 void owner() {
@@ -231,26 +239,24 @@ void owner() {
     for (int i = 0; i < 10; i++)
         tables[i].busy ? busyT++ : freeT++;
 
-    cout << "\nTotal Tables: 10\n";
+    cout << endl;
+    cout << "Total Tables: 10" << endl;
     cout << "Free Tables: " << freeT << endl;
     cout << "Busy Tables: " << busyT << endl;
-
-    for (int i = 0; i < 10; i++)
-        if (tables[i].busy)
-            cout << "Table " << tables[i].id
-                 << " occupied for "
-                 << difftime(time(0), tables[i].startTime) / 60
-                 << " minutes\n";
 }
 
 int main() {
     initFiles();
 
-    cout << "WELCOME TO RESTAURANT SYSTEM\n";
+    cout << "WELCOME TO RESTAURANT SYSTEM" << endl;
 
     int role;
     while (true) {
-        cout << "\n1 Customer\n2 Waiter\n3 Owner\n4 Exit\n";
+        cout << endl;
+        cout << "1 Customer" << endl;
+        cout << "2 Waiter" << endl;
+        cout << "3 Owner" << endl;
+        cout << "4 Exit" << endl;
         cin >> role;
 
         if (role == 1) customer();
