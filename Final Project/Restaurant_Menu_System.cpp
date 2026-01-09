@@ -1,208 +1,262 @@
 #include <iostream>
+#include <fstream>
 #include <iomanip>
+#include <ctime>
 using namespace std;
 
 struct FoodItem {
+    int id;
     string name;
     int price;
 };
 
-struct Order {
-    string name;
-    int price;
-    int qty;
+struct Table {
+    int id;
+    int busy;
+    time_t startTime;
 };
 
-Order orders[100];
-int orderCount = 0;
-
-FoodItem appetizers[11] = {
-    {"Crispy Finger Fish", 2795},
-    {"Dynamite Chicken", 3125},
-    {"Spicy Honey Chicken Wings", 2525},
-    {"Sesame Honey Chilli Chicken", 3025},
-    {"Dynamite Prawns", 4295},
-    {"Stuffed Chilli Prawns", 3895},
-    {"Prawn Tempura", 4295},
-    {"Golden Silk Prawns", 4295},
-    {"Chinese Spring Rolls", 2145},
-    {"Steamed Chicken Dumplings", 2195},
-    {"Fried Wonton", 2795}
+FoodItem menu[5] = {
+    {1, "Fried Rice", 500},
+    {2, "Chow Mein", 600},
+    {3, "Sweet & Sour Chicken", 750},
+    {4, "Kung Pao Chicken", 850},
+    {5, "Hot & Sour Soup", 400}
 };
 
-FoodItem friesSmall[3] = {
-    {"Plain Fries", 925},
-    {"Masala Fries", 995},
-    {"Cheese Fries", 1025}
-};
+Table tables[10];
 
-FoodItem friesLarge[3] = {
-    {"Plain Fries", 1095},
-    {"Masala Fries", 1175},
-    {"Cheese Fries", 1245}
-};
+void initFiles() {
+    ifstream f1("tables.txt");
+    if (!f1) {
+        ofstream o("tables.txt");
+        for (int i = 1; i <= 10; i++)
+            o << i << " 0 0\n";
+        o.close();
+    } else f1.close();
 
-FoodItem thai[14] = {
-    {"Crispy Chicken Salad", 2195},
-    {"Tom Yum Soup (Chicken)", 1575},
-    {"Tom Yum Soup (Prawn)", 1725},
-    {"Thai Green Curry Chicken", 3795},
-    {"Thai Green Curry Prawns", 4595},
-    {"Thai Red Curry Prawns", 4595},
-    {"Thai Red Curry Chicken", 3795},
-    {"Thai Chicken Cashew Nuts", 3395},
-    {"Fried Fish Tamarind Sauce", 4095},
-    {"Jasmine Rice (Half)", 1395},
-    {"Jasmine Rice (Full)", 2175},
-    {"Thai Noodles Prawns", 3475},
-    {"Thai Noodles Chicken", 3245},
-    {"Thai Noodles Vegetables", 2975}
-};
+    ifstream f2("orders.txt");
+    if (!f2) {
+        ofstream o("orders.txt");
+        o.close();
+    } else f2.close();
 
-FoodItem japanese[20] = {
-    {"Nigiri Salmon", 2175},
-    {"Nigiri Prawn", 2175},
-    {"Nigiri Crab", 2175},
-    {"Nigiri Tuna", 2175},
-    {"Sashimi Salmon", 3195},
-    {"Sashimi Tuna", 3195},
-    {"Sashimi Prawn", 3195},
-    {"Sashimi Crab", 3195},
-    {"Sashimi Mixed", 3195},
-    {"Spicy Salmon Roll", 4445},
-    {"Spicy Tuna Roll", 4445},
-    {"Rainbow Roll", 4445},
-    {"Salmon Peach Roll", 3825},
-    {"Tuna Flaming Roll", 4445},
-    {"Salmon Flaming Roll", 4445},
-    {"Crispy Salmon Roll", 3825},
-    {"Spicy Tempura Roll", 3825},
-    {"Spicy Red Snapper Roll", 3825},
-    {"California Roll", 3825},
-    {"Vegetable Roll", 2395}
-};
-
-FoodItem desserts[7] = {
-    {"New York Cheesecake Slice", 1195},
-    {"Caramel Custard", 895},
-    {"Bread and Butter Pudding", 1625},
-    {"Molten Lava Cake", 1625},
-    {"Sizzling Brownie with Ice Cream", 1575},
-    {"Chocolate Fudge Cake Slice", 895},
-    {"Warm Chocolate Fudge Cake with Ice Cream", 1345}
-};
-
-FoodItem beverages[11] = {
-    {"Soft Drinks", 325},
-    {"Frosted Mint Lemonade", 325},
-    {"Blue Lagoon", 1145},
-    {"Pina Colada", 1195},
-    {"Sparkling Water Small", 945},
-    {"Mineral Water Large", 365},
-    {"Mineral Water Small", 195},
-    {"Tea", 415},
-    {"Green Tea", 315},
-    {"Coffee", 1075},
-    {"Cold Coffee", 1345}
-};
-
-void addOrder(string name, int price) {
-    int qty;
-    cout << "Enter quantity: ";
-    cin >> qty;
-    orders[orderCount++] = {name, price, qty};
-    cout << "Added to order.\n";
+    ifstream f3("sales.txt");
+    if (!f3) {
+        ofstream o("sales.txt");
+        o.close();
+    } else f3.close();
 }
 
-void printMenuWithOrder(FoodItem items[], int size) {
-    cout << left << setw(5) << "No"
-         << setw(35) << "Item"
-         << right << setw(10) << "Price" << endl;
-
-    for (int i = 0; i < size; i++)
-        cout << left << setw(5) << i + 1
-             << setw(35) << items[i].name
-             << right << setw(10) << items[i].price << endl;
-
-    int choice;
-    cout << "Select item number (0 to cancel): ";
-    cin >> choice;
-
-    if (choice > 0 && choice <= size)
-        addOrder(items[choice - 1].name, items[choice - 1].price);
+void loadTables() {
+    ifstream fin("tables.txt");
+    for (int i = 0; i < 10; i++)
+        fin >> tables[i].id >> tables[i].busy >> tables[i].startTime;
+    fin.close();
 }
 
-void showFriesMenu() {
+void saveTables() {
+    ofstream fout("tables.txt");
+    for (int i = 0; i < 10; i++)
+        fout << tables[i].id << " " << tables[i].busy << " " << tables[i].startTime << endl;
+    fout.close();
+}
+
+FoodItem getItem(int id) {
+    for (int i = 0; i < 5; i++)
+        if (menu[i].id == id)
+            return menu[i];
+    return menu[0];
+}
+
+void showMenu() {
     cout << left << setw(5) << "No"
          << setw(30) << "Item"
-         << right << setw(10) << "Small"
-         << setw(10) << "Large" << endl;
-
-    for (int i = 0; i < 3; i++)
-        cout << left << setw(5) << i + 1
-             << setw(30) << friesSmall[i].name
-             << right << setw(10) << friesSmall[i].price
-             << setw(10) << friesLarge[i].price << endl;
-
-    int ch, size;
-    cout << "Item number (0 cancel): ";
-    cin >> ch;
-    if (ch == 0) return;
-
-    cout << "1. Small  2. Large: ";
-    cin >> size;
-
-    if (size == 1)
-        addOrder(friesSmall[ch - 1].name + " (Small)", friesSmall[ch - 1].price);
-    else if (size == 2)
-        addOrder(friesLarge[ch - 1].name + " (Large)", friesLarge[ch - 1].price);
+         << right << setw(10) << "Price\n";
+    for (int i = 0; i < 5; i++)
+        cout << left << setw(5) << menu[i].id
+             << setw(30) << menu[i].name
+             << right << setw(10) << menu[i].price << endl;
 }
 
-void showBill() {
+void orderFood(int tableId) {
+    int again = 1;
+    while (again == 1) {
+        int id, qty;
+        showMenu();
+        cout << "Select item number: ";
+        cin >> id;
+        cout << "Quantity: ";
+        cin >> qty;
+
+        ofstream fout("orders.txt", ios::app);
+        fout << tableId << " " << id << " " << qty << endl;
+        fout.close();
+
+        cout << "1 Add another item\n2 Back\n";
+        cin >> again;
+    }
+}
+
+bool showBill(int tableId) {
+    ifstream fin("orders.txt");
+    int t, id, qty;
     int total = 0;
-    cout << "\n----- BILL -----\n";
-    cout << left << setw(35) << "Item"
-         << right << setw(8) << "Qty"
+    bool found = false;
+
+    cout << "\nBILL FOR TABLE " << tableId << endl;
+    cout << left << setw(25) << "Item"
+         << right << setw(5) << "Qty"
          << setw(10) << "Price"
          << setw(10) << "Total\n";
 
-    for (int i = 0; i < orderCount; i++) {
-        int t = orders[i].price * orders[i].qty;
-        total += t;
-        cout << left << setw(35) << orders[i].name
-             << right << setw(8) << orders[i].qty
-             << setw(10) << orders[i].price
-             << setw(10) << t << endl;
+    while (fin >> t >> id >> qty) {
+        if (t == tableId) {
+            FoodItem item = getItem(id);
+            int sum = item.price * qty;
+            total += sum;
+            found = true;
+            cout << left << setw(25) << item.name
+                 << right << setw(5) << qty
+                 << setw(10) << item.price
+                 << setw(10) << sum << endl;
+        }
     }
-    cout << "-----------------------------\n";
+    fin.close();
+
+    if (!found) {
+        cout << "No orders for this table\n";
+        return false;
+    }
+
     cout << "Grand Total: Rs " << total << endl;
+    return true;
 }
 
-void foodMenu() {
+void payBill(int tableId) {
+    ifstream fin("orders.txt");
+    ofstream temp("temp.txt");
+
+    int t, id, qty;
+    int total = 0;
+    bool found = false;
+
+    while (fin >> t >> id >> qty) {
+        if (t == tableId) {
+            FoodItem item = getItem(id);
+            total += item.price * qty;
+            found = true;
+        } else {
+            temp << t << " " << id << " " << qty << endl;
+        }
+    }
+
+    fin.close();
+    temp.close();
+
+    if (!found) {
+        remove("temp.txt");
+        cout << "No orders to pay\n";
+        return;
+    }
+
+    remove("orders.txt");
+    rename("temp.txt", "orders.txt");
+
+    loadTables();
+    tables[tableId - 1].busy = 0;
+    tables[tableId - 1].startTime = 0;
+    saveTables();
+
+    ofstream sales("sales.txt", ios::app);
+    sales << "Table " << tableId << " Paid " << total << endl;
+    sales.close();
+
+    cout << "Payment successful. Total Rs " << total << endl;
+}
+
+void customer() {
+    int tableId;
+    loadTables();
+
+    cout << "Enter table number (1-10): ";
+    cin >> tableId;
+
+    if (!tables[tableId - 1].busy) {
+        tables[tableId - 1].busy = 1;
+        tables[tableId - 1].startTime = time(0);
+        saveTables();
+    }
+
     int ch;
     while (true) {
-        cout << "\n1. Appetizers\n2. Fries\n3. Thai\n4. Japanese\n5. Desserts\n6. Beverages\n7. Back\n";
+        cout << "\n1 View Menu\n2 Order Food\n3 View Bill\n4 Pay Bill\n5 Back\n";
         cin >> ch;
 
-        if (ch == 1) printMenuWithOrder(appetizers, 11);
-        else if (ch == 2) showFriesMenu();
-        else if (ch == 3) printMenuWithOrder(thai, 14);
-        else if (ch == 4) printMenuWithOrder(japanese, 20);
-        else if (ch == 5) printMenuWithOrder(desserts, 7);
-        else if (ch == 6) printMenuWithOrder(beverages, 11);
-        else if (ch == 7) break;
+        if (ch == 1) showMenu();
+        else if (ch == 2) orderFood(tableId);
+        else if (ch == 3) showBill(tableId);
+        else if (ch == 4) { payBill(tableId); break; }
+        else if (ch == 5) break;
     }
+}
+
+void waiter() {
+    ifstream fin("orders.txt");
+    int t, id, qty;
+    bool found = false;
+
+    cout << "\nACTIVE ORDERS\n";
+    cout << left << setw(10) << "Table"
+         << setw(25) << "Item"
+         << setw(5) << "Qty\n";
+
+    while (fin >> t >> id >> qty) {
+        FoodItem item = getItem(id);
+        cout << left << setw(10) << t
+             << setw(25) << item.name
+             << setw(5) << qty << endl;
+        found = true;
+    }
+    fin.close();
+
+    if (!found)
+        cout << "No active orders\n";
+}
+
+void owner() {
+    loadTables();
+    int freeT = 0, busyT = 0;
+
+    for (int i = 0; i < 10; i++)
+        tables[i].busy ? busyT++ : freeT++;
+
+    cout << "\nTotal Tables: 10\n";
+    cout << "Free Tables: " << freeT << endl;
+    cout << "Busy Tables: " << busyT << endl;
+
+    for (int i = 0; i < 10; i++)
+        if (tables[i].busy)
+            cout << "Table " << tables[i].id
+                 << " occupied for "
+                 << difftime(time(0), tables[i].startTime) / 60
+                 << " minutes\n";
 }
 
 int main() {
-    int ch;
-    while (true) {
-        cout << "\n1. Order Food\n2. View Bill\n3. Exit\n";
-        cin >> ch;
+    initFiles();
 
-        if (ch == 1) foodMenu();
-        else if (ch == 2) showBill();
-        else if (ch == 3) break;
+    cout << "WELCOME TO RESTAURANT SYSTEM\n";
+
+    int role;
+    while (true) {
+        cout << "\n1 Customer\n2 Waiter\n3 Owner\n4 Exit\n";
+        cin >> role;
+
+        if (role == 1) customer();
+        else if (role == 2) waiter();
+        else if (role == 3) owner();
+        else if (role == 4) break;
     }
     return 0;
 }
