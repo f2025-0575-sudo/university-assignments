@@ -248,7 +248,7 @@ void owner() {
 int main() {
     initFiles();
 
-    cout << "WELCOME TO RESTAURANT SYSTEM" << endl;
+    cout << "WELCOME TO HAPPY BITES" << endl;
 
     int role;
     while (true) {
